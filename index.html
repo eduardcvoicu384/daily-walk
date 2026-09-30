@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Daily Walk</title>
+  <meta name="description" content="A private, offline companion for walking in freedom, one day at a time.">
+  <meta name="theme-color" content="#EDF0F3" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#17222F" media="(prefers-color-scheme: dark)">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Daily Walk">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+  <link rel="stylesheet" href="styles.css">
+  <script src="verses.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+
+  <!-- PIN lock -->
+  <section id="lock" class="screen lock" hidden aria-label="Enter PIN">
+    <div class="lock-inner">
+      <h1 class="lock-title">Daily Walk</h1>
+      <p class="lock-hint" id="lock-hint">Enter your PIN</p>
+      <div class="pin-dots" id="pin-dots" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+      <div class="keypad" id="keypad">
+        <button type="button" data-k="1">1</button><button type="button" data-k="2">2</button><button type="button" data-k="3">3</button>
+        <button type="button" data-k="4">4</button><button type="button" data-k="5">5</button><button type="button" data-k="6">6</button>
+        <button type="button" data-k="7">7</button><button type="button" data-k="8">8</button><button type="button" data-k="9">9</button>
+        <span></span><button type="button" data-k="0">0</button><button type="button" data-k="del" aria-label="Delete">⌫</button>
+      </div>
+      <button type="button" class="link-btn" id="forgot-pin">Forgot PIN</button>
+    </div>
+  </section>
+
+  <!-- First run -->
+  <section id="onboarding" class="screen onboarding" hidden>
+    <div class="onboard-inner">
+      <h1 class="onboard-title">One day at a time.</h1>
+      <p class="onboard-lead">A private place to track your walk, fight urges when they come, and get back up with grace when you fall. Everything you enter stays on this device.</p>
+
+      <label class="field">
+        <span>Your first name <em>(optional)</em></span>
+        <input type="text" id="ob-name" autocomplete="given-name" maxlength="40">
+      </label>
+
+      <fieldset class="field">
+        <legend>When did your current streak start?</legend>
+        <div class="seg" role="radiogroup">
+          <label><input type="radio" name="ob-start" value="now" checked><span>Today</span></label>
+          <label><input type="radio" name="ob-start" value="pick"><span>Earlier date</span></label>
+        </div>
+        <input type="datetime-local" id="ob-date" hidden>
+      </fieldset>
+
+      <label class="field">
+        <span>Accountability partner <em>(optional)</em></span>
+        <input type="text" id="ob-partner" placeholder="Name" maxlength="40">
+      </label>
+      <label class="field">
+        <span>Their phone number</span>
+        <input type="tel" id="ob-phone" placeholder="For quick texts when you're struggling" inputmode="tel">
+      </label>
+
+      <button type="button" class="btn btn-dawn btn-block" id="ob-begin">Begin</button>
+    </div>
+  </section>
+
+  <!-- Main app -->
+  <div id="app" hidden>
+    <main>
+      <!-- Today -->
+      <section id="view-today" class="view" aria-label="Today">
+        <header class="topbar">
+          <p class="greeting" id="greeting">Good morning</p>
+          <button type="button" class="icon-btn" id="lock-now" aria-label="Lock app" hidden>
+            <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M8 11V8a4 4 0 0 1 8 0v3" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>
+          </button>
+        </header>
+
+        <div class="hero">
+          <svg class="sky" id="sky" viewBox="0 0 320 170" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+            <defs>
+              <linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop id="skyTop" offset="0" stop-color="#22324A"/>
+                <stop id="skyLow" offset="1" stop-color="#6E6A86"/>
+              </linearGradient>
+              <radialGradient id="sunGlow">
+                <stop offset="0" stop-color="#FFE3A8" stop-opacity=".9"/>
+                <stop offset="1" stop-color="#FFE3A8" stop-opacity="0"/>
+              </radialGradient>
+              <clipPath id="aboveHorizon"><rect x="0" y="0" width="320" height="128"/></clipPath>
+            </defs>
+            <rect width="320" height="170" fill="url(#skyGrad)"/>
+            <g clip-path="url(#aboveHorizon)">
+              <circle id="glow" cx="160" cy="150" r="70" fill="url(#sunGlow)"/>
+              <circle id="sun" cx="160" cy="150" r="20" fill="#F2B45A"/>
+            </g>
+            <path class="hills-back" d="M0 128 C 60 112, 110 120, 160 126 S 260 110, 320 122 L 320 170 L 0 170 Z"/>
+            <path class="hills-front" d="M0 140 C 70 128, 130 142, 190 136 S 280 128, 320 138 L 320 170 L 0 170 Z"/>
+            <path class="path-line" d="M160 170 C 158 158, 170 150, 166 141"/>
+          </svg>
+          <div class="count">
+            <p class="count-num" id="count-num">0</p>
+            <p class="count-unit" id="count-unit">days</p>
+          </div>
+          <p class="count-sub" id="count-sub"></p>
+        </div>
+
+        <div class="milestone" id="milestone" hidden>
+          <p class="milestone-title" id="milestone-title"></p>
+          <blockquote class="scripture" id="milestone-verse"></blockquote>
+        </div>
+
+        <button type="button" class="btn btn-dawn btn-block btn-big" id="btn-struggle">I'm struggling right now</button>
+
+        <div class="row-actions">
+          <button type="button" class="btn btn-quiet" id="btn-log">Log an urge</button>
+          <button type="button" class="btn btn-quiet" id="btn-slip">I slipped</button>
+        </div>
+
+        <section class="today-verse" aria-label="Verse for today">
+          <h2 class="section-title">For today</h2>
+          <blockquote class="scripture" id="daily-verse"></blockquote>
+        </section>
+      </section>
+
+      <!-- Journal -->
+      <section id="view-journal" class="view" aria-label="Journal" hidden>
+        <header class="topbar"><h1 class="view-title">Journal</h1></header>
+        <div class="stats" id="stats"></div>
+        <div id="entries" class="entries"></div>
+      </section>
+
+      <!-- Settings -->
+      <section id="view-settings" class="view" aria-label="Settings" hidden>
+        <header class="topbar"><h1 class="view-title">Settings</h1></header>
+
+        <div class="group">
+          <h2 class="section-title">You</h2>
+          <label class="field"><span>First name</span><input type="text" id="set-name" maxlength="40"></label>
+          <label class="field"><span>Current streak started</span><input type="datetime-local" id="set-start"></label>
+        </div>
+
+        <div class="group">
+          <h2 class="section-title">Bible</h2>
+          <div class="seg" role="radiogroup" aria-label="Bible translation">
+            <label><input type="radio" name="bible" value="kjv"><span>KJV</span></label>
+            <label><input type="radio" name="bible" value="vdc"><span>VDC</span></label>
+            <label><input type="radio" name="bible" value="ntr"><span>NTR</span></label>
+          </div>
+          <p class="help" id="bible-status"></p>
+          <button type="button" class="btn btn-quiet btn-block" id="edit-verses" hidden>Add verse text</button>
+        </div>
+
+        <div class="group">
+          <h2 class="section-title">Accountability partner</h2>
+          <label class="field"><span>Name</span><input type="text" id="set-partner" maxlength="40"></label>
+          <label class="field"><span>Phone number</span><input type="tel" id="set-phone" inputmode="tel"></label>
+          <label class="field"><span>Text message to send</span><textarea id="set-message" rows="2" maxlength="300"></textarea></label>
+          <button type="button" class="btn btn-quiet btn-block" id="save-profile">Save changes</button>
+        </div>
+
+        <div class="group">
+          <h2 class="section-title">Privacy</h2>
+          <p class="help" id="pin-status">No PIN set. Anyone who opens this app can see your entries.</p>
+          <div class="row-actions">
+            <button type="button" class="btn btn-quiet" id="set-pin">Set a PIN</button>
+            <button type="button" class="btn btn-quiet" id="remove-pin" hidden>Remove PIN</button>
+          </div>
+        </div>
+
+        <div class="group">
+          <h2 class="section-title">Backup</h2>
+          <p class="help">Your data lives only on this device. Deleting the app from your home screen deletes it too, so export a backup now and then.</p>
+          <div class="row-actions">
+            <button type="button" class="btn btn-quiet" id="export">Export backup</button>
+            <button type="button" class="btn btn-quiet" id="import">Import backup</button>
+          </div>
+          <input type="file" id="import-file" accept="application/json,.json" hidden>
+        </div>
+
+        <div class="group">
+          <button type="button" class="btn btn-danger btn-block" id="erase">Erase all data</button>
+          <p class="help small">Daily Walk v1.1</p>
+        </div>
+      </section>
+    </main>
+
+    <nav class="tabbar" aria-label="Main">
+      <button type="button" class="tab is-active" data-view="today">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 17h18M6 17a6 6 0 0 1 12 0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M12 5v2M5.5 8.5l1.4 1.4M18.5 8.5l-1.4 1.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        <span>Today</span>
+      </button>
+      <button type="button" class="tab" data-view="journal">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h11a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H6z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 8h6M9 12h6M9 16h3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        <span>Journal</span>
+      </button>
+      <button type="button" class="tab" data-view="settings">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        <span>Settings</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- Rescue screen -->
+  <section id="rescue" class="screen rescue" hidden aria-label="Get through this urge">
+    <div class="rescue-inner">
+      <button type="button" class="icon-btn rescue-close" id="rescue-close" aria-label="Close">✕</button>
+      <h1 class="rescue-title">Stop. Breathe. You're not alone.</h1>
+
+      <div class="breath" aria-live="polite">
+        <div class="breath-ring" id="breath-ring"></div>
+        <p class="breath-word" id="breath-word">Breathe in</p>
+      </div>
+      <p class="timer" id="rescue-timer">5:00</p>
+      <p class="timer-note" id="timer-note">Urges rise, peak, and fall. Stay with this for five minutes.</p>
+
+      <blockquote class="scripture scripture-light" id="rescue-verse"></blockquote>
+
+      <div class="prayer">
+        <h2 class="section-title">Pray</h2>
+        <p id="rescue-prayer"></p>
+      </div>
+
+      <div class="reach" id="reach"></div>
+
+      <div class="escape">
+        <h2 class="section-title">Do one of these now</h2>
+        <ul id="escape-list"></ul>
+      </div>
+
+      <button type="button" class="btn btn-dawn btn-block" id="made-it">I made it through</button>
+      <button type="button" class="btn btn-ghost btn-block" id="rescue-slip">I slipped</button>
+    </div>
+  </section>
+
+  <!-- Bottom sheet (log / slip / pin) -->
+  <div class="sheet-backdrop" id="sheet-backdrop" hidden></div>
+  <section class="sheet" id="sheet" hidden role="dialog" aria-modal="true" aria-labelledby="sheet-title">
+    <div class="sheet-grip" aria-hidden="true"></div>
+    <div class="sheet-body" id="sheet-body"></div>
+  </section>
+
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+</body>
+</html>

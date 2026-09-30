@@ -1,0 +1,16 @@
+{
+  "name": "Daily Walk",
+  "short_name": "Daily Walk",
+  "description": "A private, offline companion for walking in freedom, one day at a time.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#17222F",
+  "theme_color": "#17222F",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
